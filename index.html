@@ -5,6 +5,12 @@
 
 	<!-- Optional theme -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+	<style type="text/css">
+		.user-details {text-align: center;}
+		.user-details ul li {list-style: none;}
+		.avatar {margin-bottom: 20px;}
+	</style>
 </head>
 <body>
 	<script type="text/javascript" src="js/jquery.min.js"></script>
@@ -85,6 +91,7 @@
 
 		var MainLayout = Backbone.Layout.extend({
 			template: '#tpl_main_content',
+			className: 'container-fluid',
 			views: {
 				'.user-list': new UserListView({
 					collection: users
@@ -114,8 +121,10 @@
 	<!-- Layout manager template -->
 	<script type="text/template" id="tpl_main_content">
 		<div id="main_content">
-			<div class="user-list"></div>
-			<div class="user-details"></div>
+			<div class="row">
+				<div class="user-list col-md-4"></div>
+				<div class="user-details col-md-8"></div>
+			</div>
 		</div>
 	</script>
 
@@ -126,15 +135,17 @@
 
 	<!-- User details template -->
 	<script type="text/template" id="tpl_user_details">
-		<div class="avatar">
-			<img src="{{avatar}}">
+		<div class="panel">
+			<div class="avatar">
+				<img src="{{avatar}}">
+			</div>
+			<ul>
+				<li><strong>Name:</strong> {{name}}</li>
+				<li><strong>Email:</strong> {{email}}</li>
+				<li><strong>Phone:</strong> {{phone}}</li>
+				<li><strong>Twitter:</strong> {{twitter}}</li>
+			</ul>
 		</div>
-		<ul>
-			<li><strong>Name:</strong> {{name}}</li>
-			<li><strong>Email:</strong> {{email}}</li>
-			<li><strong>Phone:</strong> {{phone}}</li>
-			<li><strong>Twitter:</strong> {{twitter}}</li>
-		</ul>
 	</script>
 </body>
 </html>
