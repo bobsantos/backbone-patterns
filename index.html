@@ -1,0 +1,140 @@
+<html>
+<head>
+	<title>Index</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+</head>
+<body>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/underscore.min.js"></script>
+	<script type="text/javascript" src="js/backbone.min.js"></script>
+	<script type="text/javascript" src="js/backbone.marionette.min.js"></script>
+	<script type="text/javascript" src="js/backbone.layoutmanager.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		_.templateSettings = {
+			interpolate: /\{\{(.+?)\}\}/g
+		};
+
+		var layout;
+
+		var User = Backbone.Model.extend({
+			defaults: {
+				avatar: '',
+				name: '',
+				email: '',
+				phone: '',
+				twitter: ''
+			}
+		});
+
+		var Users = Backbone.Collection.extend({
+			model: User
+		});
+
+		var users = new Users([{
+			name: 'John Doe',
+			avatar: 'images/avatar.png',
+			phone: '12345678',
+			twitter: 'johndoe',
+			email: 'john.doe@test.com'
+		},{
+			name: 'Dan Smith',
+			avatar: 'images/avatar.png',
+			phone: '98765432',
+			twitter: 'dansmith',
+			email: 'dan.smith@test.com'
+		}]);
+
+		var UserItemView = Backbone.View.extend({
+			tagName: 'li',
+			template: '#tpl_user_item',
+			manage: true,
+			serialize: function(){
+				return this.model.toJSON();
+			},
+			events: {
+				'click a': 'showDetails'
+			},
+			showDetails: function(){
+				var detailsView = layout.getView('.user-details');
+
+				if(!detailsView){
+					detailsView = new UserDetailsView();
+					layout.setView('.user-details', detailsView);
+				}
+
+				detailsView.setModel(this.model).render();
+			}
+		});
+
+		var UserListView = Backbone.View.extend({
+			tagName: 'ul',
+			className: 'nav nav-tabs nav-stacked',
+			manage: true,
+			beforeRender: function(){
+				this.collection.each(function(model){
+					this.insertView(new UserItemView({
+						model: model
+					}));
+				}, this);
+			}
+		});
+
+		var MainLayout = Backbone.Layout.extend({
+			template: '#tpl_main_content',
+			views: {
+				'.user-list': new UserListView({
+					collection: users
+				})
+			}
+		});
+
+		var UserDetailsView = Backbone.View.extend({
+			manage: true,
+			template: '#tpl_user_details',
+			serialize: function(){
+				return this.model.toJSON();
+			},
+			setModel: function(model){
+				if(model){
+					this.model = model;
+				}
+
+				return this;
+			}
+		});
+
+		layout = new MainLayout();
+		$(document.body).append(layout.render().el);
+	</script>
+	
+	<!-- Layout manager template -->
+	<script type="text/template" id="tpl_main_content">
+		<div id="main_content">
+			<div class="user-list"></div>
+			<div class="user-details"></div>
+		</div>
+	</script>
+
+	<!-- User item template -->
+	<script type="text/template" id="tpl_user_item">
+		<a href="#" class="name">{{name}}</a>
+	</script>
+
+	<!-- User details template -->
+	<script type="text/template" id="tpl_user_details">
+		<div class="avatar">
+			<img src="{{avatar}}">
+		</div>
+		<ul>
+			<li><strong>Name:</strong> {{name}}</li>
+			<li><strong>Email:</strong> {{email}}</li>
+			<li><strong>Phone:</strong> {{phone}}</li>
+			<li><strong>Twitter:</strong> {{twitter}}</li>
+		</ul>
+	</script>
+</body>
+</html>
